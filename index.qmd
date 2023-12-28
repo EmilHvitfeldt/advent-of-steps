@@ -1,0 +1,1465 @@
+---
+format:
+  revealjs: 
+    theme: [default, styles.scss]
+    width: 1280
+    height: 720
+    include-after-body: 
+      - "all-the-js-code.html"
+echo: true
+code-line-numbers: false
+menu: false
+progress: false
+revealjs-plugins:
+  - codewindow
+knitr: true
+cache: true
+---
+
+## {.center 
+
+::: r-fit-text
+Advent of steps
+:::
+
+::: r-fit-text
+25 days of useful {recipes} steps
+:::
+
+## 01 step_dummy_extract() {.center background="linear-gradient(to bottom right, #F095FF, #F64848)"}
+
+::: {.codewindow .r width="1000px" style="margin: 0 auto;"}
+01-day.R
+```{r}
+library(recipes)
+
+example_data <- tribble(
+  ~ language,
+  "English, Italian",
+  "Spanish, French",
+  "English, French, Spanish"
+)
+
+recipe(~., data = example_data) |>
+  step_dummy_extract(language, sep = ", ") |>
+  prep() |>
+  bake(new_data = NULL)
+```
+:::
+
+## 01 text {.text .center background="linear-gradient(to bottom right, #F095FF44, #F6484844)"}
+
+Kicking off [#adventofsteps]{.hashtag} where I show you a {recipes} step I hope you will find useful each and every days for 25 days!
+
+First step we will look at is `step_dummy_extract()`, this steps pulls out all the levels in a string and counts them like `step_dummy()` would
+
+With `sep` or `pattern` and a bit of regex you can handle any kind of data
+
+<https://recipes.tidymodels.org/reference/step_dummy_extract.html>
+
+## 01 alt-text {.center background="linear-gradient(to bottom right, #F095FF44, #F6484844)"}
+
+Picture of the following code:
+
+``` r
+library(recipes)
+
+example_data <- tribble(
+  ~ language,
+  "English, Italian",
+  "Spanish, French",
+  "English, French, Spanish"
+)
+
+recipe(~., data = example_data) |>
+  step_dummy_extract(language, sep = ", ") |>
+  prep() |>
+  bake(new_data = NULL)
+#> # A tibble: 3 × 5
+#>   language_English language_French language_Italian language_Spanish
+#>              <int>           <int>            <int>            <int>
+#> 1                1               0                1                0
+#> 2                0               1                0                1
+#> 3                1               1                0                1
+#> # ℹ 1 more variable: language_other <int>
+```
+
+## 02 step_collapse_stringdist() {.center background="linear-gradient(to bottom right, #FDF28F, #FF8CB3)"}
+
+::: {.codewindow .r width="900px" style="margin: 0 auto;"}
+02-day.R
+```{r}
+library(embed)
+
+example_data <- tibble(
+  x = c("hello", "helloo", "helloo", "helloooo", 
+        "boy", "boi", "dude!")
+)
+
+recipe(~., data = example_data) |>
+  step_collapse_stringdist(all_predictors(), distance = 1) |>
+  prep() |>
+  bake(new_data = NULL)
+```
+:::
+
+## 02 text {.text .center background="linear-gradient(to bottom right, #FDF28F44, #FF8CB344)"}
+
+Back for second day of [#adventofsteps]{.hashtag} where I show you a {recipes} step I hope you will find useful each and every days for 25 days!
+
+This time we are looking at then extension package {embed} for the step `step_collapse_stringdist()`. This step will all the levels that have have a string distance less than specified.
+
+Many different types of distances can been selected with `method` argument
+
+<https://embed.tidymodels.org/reference/step_collapse_stringdist.html>
+
+## 02 alt-text {.center background="linear-gradient(to bottom right, #FDF28F44, #FF8CB344)"}
+
+Picture of the following code:
+
+``` r
+library(embed)
+
+example_data <- tibble(
+  x = c("hello", "helloo", "helloo", "helloooo", 
+        "boy", "boi", "dude!")
+)
+
+recipe(~., data = example_data) |>
+  step_collapse_stringdist(all_predictors(), distance = 1) |>
+  prep() |>
+  bake(new_data = NULL)
+#> # A tibble: 7 × 1
+#>   x       
+#>   <fct>   
+#> 1 hello   
+#> 2 hello   
+#> 3 hello   
+#> 4 helloooo
+#> 5 boi     
+#> 6 boi     
+#> 7 dude!
+```
+
+## 03 step_indicate_na() {.center background="linear-gradient(to bottom right, #E0C3FD, #8EC6FC)"}
+
+::: {.codewindow .r width="950px" style="margin: 0 auto;"}
+03-day.R
+```{r}
+library(recipes)
+
+example_data <- tibble(
+  x1 = c(1, 5, 8, NA, NA, 3),
+  x2 = c(1, NA, 3, 6, 2, 2),
+  x3 = c(NA, NA, NA, NA, NA, NA),
+  x4 = c(7, 8, 4, 2, 1, 1)
+)
+
+recipe(~ ., data = example_data) |>
+  step_indicate_na(all_predictors()) |>
+  prep() |>
+  bake(new_data = NULL)
+```
+:::
+
+## 03 text {.text .center background="linear-gradient(to bottom right, #E0C3FD44, #8EC6FC44)"}
+
+For the third day of [#adventofsteps]{.hashtag} we are back in {recipes}, and we looking at a different way to handle missing values.
+
+Before you do any imputation on missing values, it might be beneficial to know which predictors had missing data and when. `step_indicate_na()` handles that with ease
+
+<https://recipes.tidymodels.org/reference/step_indicate_na.html>
+
+## 03 alt-text {.center background="linear-gradient(to bottom right, #E0C3FD44, #8EC6FC44)"}
+
+Picture of the following code:
+
+``` r
+library(recipes)
+
+example_data <- tibble(
+  x1 = c(1, 5, 8, NA, NA, 3),
+  x2 = c(1, NA, 3, 6, 2, 2),
+  x3 = c(NA, NA, NA, NA, NA, NA),
+  x4 = c(7, 8, 4, 2, 1, 1)
+)
+
+recipe(~ ., data = example_data) |>
+  step_indicate_na(all_predictors()) |>
+  prep() |>
+  bake(new_data = NULL)
+#> # A tibble: 6 × 8
+#>      x1    x2 x3       x4 na_ind_x1 na_ind_x2 na_ind_x3 na_ind_x4
+#>   <dbl> <dbl> <lgl> <dbl>     <int>     <int>     <int>     <int>
+#> 1     1     1 NA        7         0         0         1         0
+#> 2     5    NA NA        8         0         1         1         0
+#> 3     8     3 NA        4         0         0         1         0
+#> 4    NA     6 NA        2         1         0         1         0
+#> 5    NA     2 NA        1         1         0         1         0
+#> 6     3     2 NA        1         0         0         1         0
+```
+
+## 04 step_clean_names() {.center background="linear-gradient(to bottom right, #89F7FE, #66A5FF)"}
+
+::: {.codewindow .r width="900px" style="margin: 0 auto;"}
+04-day.R
+```{r}
+library(textrecipes)
+
+example_data <- tibble(
+  `bad names` = c(1, 2, 3, 4, 5),
+  `ωeird-characters`  = c(1, 2, 3, 4, 5)
+)
+
+recipe(~ ., data = example_data) |>
+  step_clean_names(all_predictors()) |>
+  prep() |>
+  bake(new_data = NULL)
+```
+:::
+
+## 04 text {.text .center background="linear-gradient(to bottom right, #89F7FE44, #66A5FF44)"}
+
+For the Forth day of [#adventofsteps]{.hashtag} we take a look at {textrecipes} for some non-text related steps.
+
+Some functions are much more strict regarding the names of the columns that are accepted. Things like spaces and non-ascii characters will sometimes causes errors. `step_clean_names()` should always give you valid names
+
+<https://textrecipes.tidymodels.org/reference/step_clean_names.html>
+
+## 04 alt-text {.center background="linear-gradient(to bottom right, #89F7FE44, #66A5FF44)"}
+
+Picture of the following code:
+
+``` r
+library(textrecipes)
+
+example_data <- tibble(
+  `bad names` = c(1, 2, 3, 4, 5),
+  `ωeird-characters`  = c(1, 2, 3, 4, 5)
+)
+
+recipe(~ ., data = example_data) |>
+  step_clean_names(all_predictors()) |>
+  prep() |>
+  bake(new_data = NULL)
+#> # A tibble: 5 × 2
+#>   bad_names oeird_characters
+#>       <dbl>            <dbl>
+#> 1         1                1
+#> 2         2                2
+#> 3         3                3
+#> 4         4                4
+#> 5         5                5
+```
+
+## 05 step_lencode_mixed() {.center background="linear-gradient(to bottom right, #82F6BA, #99C0E8)"}
+
+::: {.codewindow .r width="1100px" style="margin: 0 auto;"}
+05-day.R
+```{r}
+library(embed)
+
+data(flights, package = "nycflights13")
+
+recipe(arr_delay ~ carrier + tailnum + origin + dest, data = flights) |>
+  step_lencode_mixed(all_nominal_predictors(), outcome = vars(arr_delay)) |>
+  prep() |>
+  bake(new_data = NULL)
+```
+:::
+
+## 05 text {.text .center background="linear-gradient(to bottom right, #82F6BA44, #99C0E844)"}
+
+For the fifth day of [#adventofsteps]{.hashtag} we look at ways to handle categorical variables with many levels.
+
+Creating dummy variables, can be ineffective when dealing with many levels. Instead we can use target/likelihood/mean/impact encoding to capture the relationships between an variable (typically the outcome) and our predictors
+
+<https://embed.tidymodels.org/reference/step_lencode_mixed.html>
+
+## 05 alt-text {.center background="linear-gradient(to bottom right, #82F6BA44, #99C0E844)"}
+
+Picture of the following code:
+
+``` r
+library(embed)
+
+data(flights, package = "nycflights13")
+
+recipe(arr_delay ~ carrier + tailnum + origin + dest, data = flights) |>
+  step_lencode_mixed(all_nominal_predictors(), outcome = vars(arr_delay)) |>
+  prep() |>
+  bake(new_data = NULL)
+#> # A tibble: 336,776 × 5
+#>    carrier tailnum origin   dest arr_delay
+#>      <dbl>   <dbl>  <dbl>  <dbl>     <dbl>
+#>  1   3.56    4.51    9.10  4.27         11
+#>  2   3.56    7.34    5.79  4.27         20
+#>  3   0.370   6.78    5.56  0.331        33
+#>  4   9.46   -0.360   5.56  8.29        -18
+#>  5   1.65    4.49    5.79 11.3         -25
+#>  6   3.56    3.46    9.10  5.88         12
+#>  7   9.46   11.2     9.10  8.09         19
+#>  8  15.8    15.2     5.79 13.8         -14
+#>  9   9.46   11.8     5.56  5.47         -8
+#> 10   0.370   4.79    5.79  5.88          8
+#> # ℹ 336,766 more rows
+```
+
+## 06 step_umap() {.center background="linear-gradient(to bottom right, #F1C75C, #ED90A4)"}
+
+::: {.codewindow .r width="900px" style="margin: 0 auto;"}
+06-day.R
+```{r}
+library(embed)
+
+data(diamonds, package = "ggplot2")
+
+set.seed(1234)
+
+recipe(price ~ ., data = diamonds) |>
+  step_dummy(all_nominal_predictors()) |>
+  step_normalize(all_numeric_predictors()) |>
+  step_umap(all_numeric_predictors()) |>
+  prep() |>
+  bake(new_data = NULL)
+```
+:::
+
+## 06 text {.text .center background="linear-gradient(to bottom right, #F1C75C44, #ED90A444)"}
+
+For the sixth day of [#adventofsteps]{.hashtag} we turn to the popular dimensionality reduction method UMAP.
+
+With the `outcome`, `neighbors`, `num_comp`, `min_dist`,  `metric` and more, you are able to create just the UMAP visualization you need.
+
+<https://embed.tidymodels.org/reference/step_lencode_mixed.html>
+
+## 06 alt-text {.center background="linear-gradient(to bottom right, #F1C75C44, #ED90A444)"}
+
+Picture of the following code:
+
+``` r
+library(embed)
+
+data(diamonds, package = "ggplot2")
+
+set.seed(1234)
+
+recipe(price ~ ., data = diamonds) |>
+  step_dummy(all_nominal_predictors()) |>
+  step_normalize(all_numeric_predictors()) |>
+  step_umap(all_numeric_predictors()) |>
+  prep() |>
+  bake(new_data = NULL)
+#> # A tibble: 53,940 × 3
+#>    price   UMAP1   UMAP2
+#>    <int>   <dbl>   <dbl>
+#>  1   326  -0.605   5.56 
+#>  2   326  -1.17  -16.8  
+#>  3   327  -1.78   -5.43 
+#>  4   334 -10.7   -12.3  
+#>  5   335  14.2     2.66 
+#>  6   336   2.50    1.79 
+#>  7   336  -5.48    0.914
+#>  8   337   7.39   -5.29 
+#>  9   337  -1.43   -5.95 
+#> 10   338  -6.38   -0.785
+#> # ℹ 53,930 more rows
+```
+
+## 07 step_date() & step_time() {.center background="linear-gradient(to bottom right, #A6C1FF, #F77F83)"}
+
+::: {.codewindow .r width="950px" style="margin: 0 auto; font-size: 0.35em;"}
+07-day.R
+```{r}
+library(recipes)
+
+example_data <- tibble(date = Sys.time() + 9 ^ (1:10))
+
+recipe(~ ., data = example_data) |>
+  step_date(all_datetime(), 
+            features = c("year", "doy", "week", "decimal", "semester", 
+                         "quarter", "dow", "month")) |>
+  step_time(all_datetime(),
+            features = c("am", "hour", "hour12", "minute", "second", 
+                         "decimal_day")) |>
+  prep() |>
+  bake(new_data = NULL) |>
+  glimpse()
+```
+:::
+
+## 07 text {.text .center background="linear-gradient(to bottom right, #A6C1FF44, #F77F8344)"}
+
+For the seventh day of [#adventofsteps]{.hashtag} we look at time with `step_date()` and `step_time()`
+
+Each of these functions takes date and datetime variables, and returns a number of extractable components. With the former extracting larger than "day" elements
+
+<https://recipes.tidymodels.org/reference/step_date.html>
+<https://recipes.tidymodels.org/reference/step_time.html>
+
+## 07 alt-text {.center background="linear-gradient(to bottom right, #A6C1FF44, #F77F8344)"}
+
+Picture of the following code:
+
+``` r
+library(recipes)
+
+example_data <- tibble(date = Sys.time() + 9 ^ (1:10))
+
+recipe(~ ., data = example_data) |>
+  step_date(all_datetime(), 
+            features = c("year", "doy", "week", "decimal", "semester", 
+                         "quarter", "dow", "month")) |>
+  step_time(all_datetime(),
+            features = c("am", "hour", "hour12", "minute", "second", 
+                         "decimal_day")) |>
+  prep() |>
+  bake(new_data = NULL) |>
+  glimpse()
+#> Rows: 10
+#> Columns: 15
+#> $ date             <dttm> 2023-12-07 11:49:19, 2023-12-07 11:50:31, 2023-12-07…
+#> $ date_year        <int> 2023, 2023, 2023, 2023, 2023, 2023, 2024, 2025, 2036,…
+#> $ date_doy         <int> 341, 341, 341, 341, 342, 347, 31, 108, 77, 155
+#> $ date_week        <int> 49, 49, 49, 49, 49, 50, 5, 16, 11, 23
+#> $ date_decimal     <dbl> 2023.933, 2023.933, 2023.933, 2023.933, 2023.935, 202…
+#> $ date_semester    <int> 2, 2, 2, 2, 2, 2, 1, 1, 1, 1
+#> $ date_quarter     <int> 4, 4, 4, 4, 4, 4, 1, 2, 1, 2
+#> $ date_dow         <fct> Thu, Thu, Thu, Thu, Fri, Wed, Wed, Fri, Mon, Fri
+#> $ date_month       <fct> Dec, Dec, Dec, Dec, Dec, Dec, Jan, Apr, Mar, Jun
+#> $ date_am          <lgl> TRUE, TRUE, FALSE, FALSE, TRUE, FALSE, FALSE, FALSE, …
+#> $ date_hour        <int> 11, 11, 12, 13, 4, 15, 20, 18, 13, 20
+#> $ date_hour12      <int> 11, 11, 12, 1, 4, 3, 8, 6, 1, 8
+#> $ date_minute      <int> 49, 50, 1, 38, 13, 26, 25, 14, 37, 2
+#> $ date_second      <dbl> 19.38231, 31.38231, 19.38231, 31.38231, 19.38231, 31.…
+#> $ date_decimal_day <dbl> 11.822051, 11.842051, 12.022051, 13.642051, 4.222051,…
+```
+
+## 08 step_discretize() {.center background="linear-gradient(to bottom right, #FCC989, #D57FEA)"}
+
+::: {.codewindow .r width="900px" style="margin: 0 auto;"}
+08-day.R
+```{r}
+library(recipes)
+
+data(ames, package = "modeldata")
+
+recipe(~ Lot_Frontage + Lot_Area, data = ames) |>
+  step_discretize(all_numeric_predictors(), num_breaks = 5) |>
+  prep() |>
+  bake(new_data = NULL)
+```
+:::
+
+## 08 text {.text .center background="linear-gradient(to bottom right, #FCC98944, #D57FEA44)"}
+
+For the eighth day of [#adventofsteps]{.hashtag} we go very controversial, with `step_discretize()`
+
+There are a lot of talk, whether you should discretize numerical variables into categorical variables. Whether or not it is a good idea, there is a step for it so you can experiment for yourself
+
+<https://recipes.tidymodels.org/reference/step_discretize.html>
+
+## 08 alt-text {.center background="linear-gradient(to bottom right, #FCC98944, #D57FEA44)"}
+
+Picture of the following code:
+
+``` r
+library(recipes)
+
+data(ames, package = "modeldata")
+
+recipe(~ Lot_Frontage + Lot_Area, data = ames) |>
+  step_discretize(all_numeric_predictors(), num_breaks = 5) |>
+  prep() |>
+  bake(new_data = NULL)
+#> Warning: Note that the options `prefix` and `labels` will be applied to all
+#> variables
+#> # A tibble: 2,930 × 2
+#>    Lot_Frontage Lot_Area
+#>    <fct>        <fct>   
+#>  1 bin5         bin5    
+#>  2 bin4         bin4    
+#>  3 bin5         bin5    
+#>  4 bin5         bin4    
+#>  5 bin4         bin5    
+#>  6 bin4         bin3    
+#>  7 bin2         bin1    
+#>  8 bin2         bin1    
+#>  9 bin2         bin1    
+#> 10 bin2         bin2    
+#> # ℹ 2,920 more rows
+```
+
+## 09 step_harmonic() {.center background="linear-gradient(to bottom right, #D2FB79, #95E6A1)"}
+
+::: {.codewindow .r width="900px" style="margin: 0 auto;"}
+09-day.R
+```{r}
+library(recipes)
+
+example_data <- tibble(
+  year = 1700:1988,
+  n_sunspot = sunspot.year
+)
+
+recipe(n_sunspot ~ year, data = example_data) |>
+  step_harmonic(year, frequency = 1 / 11, cycle_size = 1) |>
+  prep() |>
+  bake(new_data = NULL)
+```
+:::
+
+## 09 text {.text .center background="linear-gradient(to bottom right, #D2FB7944, #95E6A144)"}
+
+For the ninth day of [#adventofsteps]{.hashtag} we look at one way to deal with cyclical predictors
+
+`step_harmonic()` calculates `sin()` and `cos()` of the predictors passed to it. With the right `frequency` and `cycle_size`, you can extract good signal if it is there
+
+<https://recipes.tidymodels.org/reference/step_harmonic.html>
+
+## 09 alt-text {.center background="linear-gradient(to bottom right, #D2FB7944, #95E6A144)"}
+
+Picture of the following code:
+
+``` r
+library(recipes)
+
+example_data <- tibble(
+  year = 1700:1988,
+  n_sunspot = sunspot.year
+)
+
+recipe(n_sunspot ~ year, data = example_data) |>
+  step_harmonic(year, frequency = 1 / 11, cycle_size = 1) |>
+  prep() |>
+  bake(new_data = NULL)
+#> # A tibble: 289 × 3
+#>    n_sunspot year_sin_1 year_cos_1
+#>        <dbl>      <dbl>      <dbl>
+#>  1         5  -2.82e- 1     -0.959
+#>  2        11  -7.56e- 1     -0.655
+#>  3        16  -9.90e- 1     -0.142
+#>  4        23  -9.10e- 1      0.415
+#>  5        36  -5.41e- 1      0.841
+#>  6        58   6.86e-14      1    
+#>  7        29   5.41e- 1      0.841
+#>  8        20   9.10e- 1      0.415
+#>  9        10   9.90e- 1     -0.142
+#> 10         8   7.56e- 1     -0.655
+#> # ℹ 279 more rows
+```
+
+## 10 step_best_normalize() {.center background="linear-gradient(to bottom right, #F6D365, #FD9F86)"}
+
+::: {.codewindow .r width="900px" style="margin: 0 auto;"}
+10-day.R
+```{r}
+library(recipes)
+library(bestNormalize)
+
+data(ames, package = "modeldata")
+
+recipe(Sale_Price ~ Lot_Frontage + Lot_Area, data = ames) |>
+  step_best_normalize(all_numeric_predictors()) |>
+  prep() |>
+  bake(new_data = NULL)
+```
+:::
+
+## 10 text {.text .center background="linear-gradient(to bottom right, #F6D36544, #FD9F8644)"}
+
+For the Tenth day of [#adventofsteps]{.hashtag} we look at another package {bestNormalize}
+
+This community created package, implements the step `step_best_normalize()`, which gives us new ways of normalize numerical predicts. Please see the documentation of the package for more information
+
+<https://petersonr.github.io/bestNormalize/reference/step_best_normalize.html>
+
+## 10 alt-text {.center background="linear-gradient(to bottom right, #F6D36544, #FD9F8644)"}
+
+Picture of the following code:
+
+``` r
+library(recipes)
+library(bestNormalize)
+
+data(ames, package = "modeldata")
+
+recipe(Sale_Price ~ Lot_Frontage + Lot_Area, data = ames) |>
+  step_best_normalize(all_numeric_predictors()) |>
+  prep() |>
+  bake(new_data = NULL)
+#> # A tibble: 2,930 × 3
+#>    Lot_Frontage Lot_Area Sale_Price
+#>           <dbl>    <dbl>      <int>
+#>  1        2.48     2.29      215000
+#>  2        0.789    0.689     105000
+#>  3        0.883    1.28      172000
+#>  4        1.33     0.574     244000
+#>  5        0.468    1.19      189900
+#>  6        0.656    0.201     195500
+#>  7       -0.702   -1.27      213500
+#>  8       -0.669   -1.24      191500
+#>  9       -0.735   -1.19      236500
+#> 10       -0.170   -0.654     189000
+#> # ℹ 2,920 more rows
+```
+
+## 11 step_timeseries_signature() {.center background="linear-gradient(to bottom right, #A2C4FD, #C2EAFB)"}
+
+::: {.codewindow .r width="1200px" style="margin: 0 auto;"}
+11-day.R
+```{r}
+library(recipes)
+library(timetk)
+
+example_data <- FANG |> filter(symbol == "FB")
+
+recipe(~date, data = example_data) |>
+  step_timeseries_signature(date) |>
+  prep() |>
+  bake(new_data = NULL) |>
+  glimpse()
+```
+:::
+
+## 11 text {.text .center background="linear-gradient(to bottom right, #A2C4FD44, #C2EAFB44)"}
+
+For day 11 of [#adventofsteps]{.hashtag} we look at another community package, this time {timetk}
+
+{timetk} is a very nice package for dealing with time series analysis. `step_timeseries_signature()` is similar to `step_date()` and `step_time()` we saw earlier, but this step gives us even more insight using timeseries specific values
+
+<https://business-science.github.io/timetk/reference/step_timeseries_signature.html>
+
+## 11 alt-text {.center background="linear-gradient(to bottom right, #A2C4FD44, #C2EAFB44)"}
+
+Picture of the following code:
+
+``` r
+library(recipes)
+library(timetk)
+
+example_data <- FANG |> filter(symbol == "FB")
+
+recipe(~date, data = example_data) |>
+  step_timeseries_signature(date) |>
+  prep() |>
+  bake(new_data = NULL) |>
+  glimpse()
+#> Rows: 1,008
+#> Columns: 28
+#> $ date           <date> 2013-01-02, 2013-01-03, 2013-01-04, 2013-01-07, 2013-0…
+#> $ date_index.num <dbl> 1357084800, 1357171200, 1357257600, 1357516800, 1357603…
+#> $ date_year      <int> 2013, 2013, 2013, 2013, 2013, 2013, 2013, 2013, 2013, 2…
+#> $ date_year.iso  <int> 2013, 2013, 2013, 2013, 2013, 2013, 2013, 2013, 2013, 2…
+#> $ date_half      <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+#> $ date_quarter   <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+#> $ date_month     <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+#> $ date_month.xts <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+#> $ date_month.lbl <ord> January, January, January, January, January, January, J…
+#> $ date_day       <int> 2, 3, 4, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18, 22, 23, 2…
+#> $ date_hour      <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+#> $ date_minute    <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+#> $ date_second    <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+#> $ date_hour12    <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+#> $ date_am.pm     <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+#> $ date_wday      <int> 4, 5, 6, 2, 3, 4, 5, 6, 2, 3, 4, 5, 6, 3, 4, 5, 6, 2, 3…
+#> $ date_wday.xts  <int> 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 2, 3, 4, 5, 1, 2…
+#> $ date_wday.lbl  <ord> Wednesday, Thursday, Friday, Monday, Tuesday, Wednesday…
+#> $ date_mday      <int> 2, 3, 4, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18, 22, 23, 2…
+#> $ date_qday      <int> 2, 3, 4, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18, 22, 23, 2…
+#> $ date_yday      <int> 2, 3, 4, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18, 22, 23, 2…
+#> $ date_mweek     <int> 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5…
+#> $ date_week      <int> 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5…
+#> $ date_week.iso  <int> 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5…
+#> $ date_week2     <int> 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1…
+#> $ date_week3     <int> 1, 1, 1, 1, 2, 2, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2…
+#> $ date_week4     <int> 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 0, 0, 0, 0, 0, 1…
+#> $ date_mday7     <int> 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5…
+```
+
+## 12 step_textfeature() {.center background="linear-gradient(to bottom right, #FDF28E, #89F5FE)"}
+
+::: {.codewindow .r width="900px" style="margin: 0 auto;"}
+12-day.R
+```{r}
+library(textrecipes)
+
+data(tate_text, package = "modeldata")
+
+recipe(~ medium, data = tate_text) |>
+  step_textfeature(medium) |>
+  prep() |>
+  bake(new_data = NULL) |>
+  glimpse()
+```
+:::
+
+## 12 text {.text .center background="linear-gradient(to bottom right, #FDF28E44, #89F5FE44)"}
+
+For day 12 of [#adventofsteps]{.hashtag} we look at a low-fi way of dealing with text predictors. 
+
+The idea is quite simple. Having a number of predictors that count the number of characters, words, periods, emojis and so on. This is what `step_textfeature()` is doing.
+
+<https://textrecipes.tidymodels.org/reference/step_textfeature.html>
+
+## 12 alt-text {.center background="linear-gradient(to bottom right, #FDF28E44, #89F5FE44)"}
+
+Picture of the following code:
+
+``` r
+library(textrecipes)
+
+data(tate_text, package = "modeldata")
+
+recipe(~ medium, data = tate_text) |>
+  step_textfeature(medium) |>
+  prep() |>
+  bake(new_data = NULL) |>
+  glimpse()
+#> Rows: 4,284
+#> Columns: 26
+#> $ textfeature_medium_n_words        <int> 8, 3, 3, 3, 4, 4, 4, 3, 6, 3, 3, 3, …
+#> $ textfeature_medium_n_uq_words     <int> 8, 3, 3, 3, 4, 4, 4, 3, 6, 3, 3, 3, …
+#> $ textfeature_medium_n_charS        <int> 48, 14, 14, 14, 16, 16, 19, 14, 22, …
+#> $ textfeature_medium_n_uq_charS     <int> 19, 12, 12, 12, 11, 11, 12, 11, 14, …
+#> $ textfeature_medium_n_digits       <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+#> $ textfeature_medium_n_hashtags     <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+#> $ textfeature_medium_n_uq_hashtags  <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+#> $ textfeature_medium_n_mentions     <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+#> $ textfeature_medium_n_uq_mentions  <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+#> $ textfeature_medium_n_commas       <int> 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+#> $ textfeature_medium_n_periods      <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+#> $ textfeature_medium_n_exclaims     <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+#> $ textfeature_medium_n_extraspaces  <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+#> $ textfeature_medium_n_caps         <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
+#> $ textfeature_medium_n_lowers       <int> 43, 13, 13, 13, 15, 15, 18, 13, 21, …
+#> $ textfeature_medium_n_urls         <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+#> $ textfeature_medium_n_uq_urls      <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+#> $ textfeature_medium_n_nonasciis    <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+#> $ textfeature_medium_n_puncts       <int> 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+#> $ textfeature_medium_first_person   <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+#> $ textfeature_medium_first_personp  <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+#> $ textfeature_medium_second_person  <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+#> $ textfeature_medium_second_personp <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+#> $ textfeature_medium_third_person   <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+#> $ textfeature_medium_to_be          <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+#> $ textfeature_medium_prepositions   <int> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+```
+
+## 13 step_nnmf_sparse() {.center background="linear-gradient(to bottom right, #89F5FE, #97E69F)"}
+
+::: {.codewindow .r width="900px" style="margin: 0 auto;"}
+13-day.R
+```{r}
+library(recipes)
+library(Matrix) # needs to be loaded for step to work
+
+data(ames, package = "modeldata")
+
+recipe(Sale_Price ~ ., data = ames) |>
+  step_dummy(all_nominal_predictors()) |>
+  step_nzv(all_numeric_predictors()) |>
+  step_normalize(all_numeric_predictors()) |>
+  step_nnmf_sparse(all_numeric_predictors()) |>
+  prep() |>
+  bake(new_data = NULL)
+```
+:::
+
+## 13 text {.text .center background="linear-gradient(to bottom right, #89F5FE44, #97E69F44)"}
+
+For day 13 of [#adventofsteps]{.hashtag} we look at a need kind of dimensionality reduction. 
+
+`step_nnmf_sparse()` performs non-negative matrix factorization signal extraction with lasso penalization
+
+<https://recipes.tidymodels.org/reference/step_nnmf_sparse.html>
+
+## 13 alt-text {.center background="linear-gradient(to bottom right, #89F5FE44, #97E69F44)"}
+
+Picture of the following code:
+
+``` r
+library(recipes)
+library(Matrix) # needs to be loaded for step to work
+
+data(ames, package = "modeldata")
+
+recipe(Sale_Price ~ ., data = ames) |>
+  step_dummy(all_nominal_predictors()) |>
+  step_nzv(all_numeric_predictors()) |>
+  step_normalize(all_numeric_predictors()) |>
+  step_nnmf_sparse(all_numeric_predictors()) |>
+  prep() |>
+  bake(new_data = NULL)
+#> # A tibble: 2,930 × 3
+#>    Sale_Price   NNMF1   NNMF2
+#>         <int>   <dbl>   <dbl>
+#>  1     215000  0.150  -0.616 
+#>  2     105000 -0.375   0.104 
+#>  3     172000 -0.180   0.0620
+#>  4     244000  0.227  -0.304 
+#>  5     189900  0.311  -0.136 
+#>  6     195500  0.360  -0.300 
+#>  7     213500  0.143  -0.300 
+#>  8     191500  0.0581 -0.524 
+#>  9     236500  0.266  -0.226 
+#> 10     189000  0.323   0.0212
+#> # ℹ 2,920 more rows
+```
+
+## 14 step_kmeans() {.center background="linear-gradient(to bottom right, #F58186, #97E69F)"}
+
+::: {.codewindow .r width="900px" style="margin: 0 auto;"}
+14-day.R
+```{r}
+library(recipes)
+library(MachineShop)
+
+set.seed(1234)
+
+recipe(~., data = mtcars) |>
+  step_normalize(all_numeric_predictors()) |>
+  step_kmeans(all_numeric_predictors(), k = 3) |>
+  prep() |>
+  bake(new_data = NULL)
+```
+:::
+
+## 14 text {.text .center background="linear-gradient(to bottom right, #F5818644, #97E69F44)"}
+
+For day 14 of [#adventofsteps]{.hashtag} we look at yet another way to di dimensionality reduction. Using K-Means clustering
+
+`step_kmeans()` from the {MachineShop} package will convert numeric variables into one or more by averaging within k-means clusters.
+
+<https://rdrr.io/cran/MachineShop/man/step_kmeans.html>
+
+## 14 alt-text {.center background="linear-gradient(to bottom right, #F5818644, #97E69F44)"}
+
+Picture of the following code:
+
+``` r
+library(recipes)
+library(MachineShop)
+
+set.seed(1234)
+
+recipe(~., data = mtcars) |>
+  step_normalize(all_numeric_predictors()) |>
+  step_kmeans(all_numeric_predictors(), k = 3) |>
+  prep() |>
+  bake(new_data = NULL)
+#> # A tibble: 32 × 3
+#>    KMeans1   KMeans2 KMeans3
+#>      <dbl>     <dbl>   <dbl>
+#>  1  0.583  -0.217     -0.823
+#>  2  0.583  -0.165     -0.666
+#>  3  0.634  -1.01       0.771
+#>  4 -0.624  -0.309      1.00 
+#>  5 -0.703   0.439     -0.666
+#>  6 -0.910  -0.327      1.22 
+#>  7 -0.857   0.918     -0.996
+#>  8  0.125  -0.734      1.16 
+#>  9  0.166  -0.655      1.97 
+#> 10  0.0166  0.000617   0.684
+#> # ℹ 22 more rows
+```
+
+## 15 step_clean_levels() {.center background="linear-gradient(to bottom right, #F58186, #F092F9)"}
+
+::: {.codewindow .r width="900px" style="margin: 0 auto;"}
+15-day.R
+```{r}
+library(textrecipes)
+
+example_data <- tibble(
+  x = c("bad names", "ωeird-characters")
+)
+
+recipe(~ ., data = example_data) |>
+  step_clean_levels(all_predictors()) |>
+  prep() |>
+  bake(new_data = NULL)
+```
+:::
+
+## 15 text {.text .center background="linear-gradient(to bottom right, #F5818644, #F092F944)"}
+
+For day 15 of [#adventofsteps]{.hashtag} we look at how to deal with dirty categorical levels.
+
+When we say dirty in this context, we mean that some levels will produce bad column names if used for other things such as dummy variables. `step_clean_levels()` will make it so all levels only consists of characters, numbers and underscores.
+
+<https://textrecipes.tidymodels.org/reference/step_clean_levels.html>
+
+## 15 alt-text {.center background="linear-gradient(to bottom right, #F5818644, #F092F944)"}
+
+Picture of the following code:
+
+``` r
+library(textrecipes)
+
+example_data <- tibble(
+  x = c("bad names", "ωeird-characters")
+)
+
+recipe(~ ., data = example_data) |>
+  step_clean_levels(all_predictors()) |>
+  prep() |>
+  bake(new_data = NULL)
+#> # A tibble: 2 × 1
+#>   x               
+#>   <fct>           
+#> 1 bad_names       
+#> 2 oeird_characters
+```
+
+## 16 step_discretize_cart() {.center background="linear-gradient(to bottom right, #D1FB7A, #A3C5FD)"}
+
+::: {.codewindow .r width="1100px" style="margin: 0 auto;"}
+16-day.R
+```{r}
+library(embed)
+
+data(ames, package = "modeldata")
+
+recipe(Sale_Price ~ Lot_Frontage + Lot_Area, data = ames) |>
+  step_discretize_cart(all_numeric_predictors(), outcome = "Sale_Price") |>
+  prep() |>
+  bake(new_data = NULL)
+```
+:::
+
+## 16 text {.text .center background="linear-gradient(to bottom right, #D1FB7A44, #A3C5FD44)"}
+
+For day 16 of [#adventofsteps]{.hashtag}, we will show a more sophisticated way to discretize your numeric predictors.
+
+`step_discretize_cart()` from {embed} fits a decision tree using the numeric predictor against the outcome. Then replaces it with levels, according to the leafs of the tree.
+
+<https://embed.tidymodels.org/reference/step_discretize_cart.html>
+
+## 16 alt-text {.center background="linear-gradient(to bottom right, #D1FB7A44, #A3C5FD44)"}
+
+Picture of the following code:
+
+``` r
+library(embed)
+
+data(ames, package = "modeldata")
+
+recipe(Sale_Price ~ Lot_Frontage + Lot_Area, data = ames) |>
+  step_discretize_cart(all_numeric_predictors(), outcome = "Sale_Price") |>
+  prep() |>
+  bake(new_data = NULL)
+#> # A tibble: 2,930 × 3
+#>    Lot_Frontage Lot_Area              Sale_Price
+#>    <fct>        <fct>                      <int>
+#>  1 [118.5, Inf] [1.341e+04, Inf]          215000
+#>  2 [60.5,81.5)  [1.093e+04,1.341e+04)     105000
+#>  3 [60.5,81.5)  [1.341e+04, Inf]          172000
+#>  4 [81.5,94.5)  [1.093e+04,1.341e+04)     244000
+#>  5 [60.5,81.5)  [1.341e+04, Inf]          189900
+#>  6 [60.5,81.5)  [8639,1.093e+04)          195500
+#>  7 [24.5,49.5)  [-Inf,8639)               213500
+#>  8 [24.5,49.5)  [-Inf,8639)               191500
+#>  9 [24.5,49.5)  [-Inf,8639)               236500
+#> 10 [49.5,60.5)  [-Inf,8639)               189000
+#> # ℹ 2,920 more rows
+```
+
+## 17 step_dummy_multi_choice() {.center background="linear-gradient(to bottom right, #D1FB7A, #FDA085)"}
+
+::: {.codewindow .r width="1100px" style="margin: 0 auto;"}
+17-day.R
+```{r}
+library(recipes)
+
+example_data <- tribble(
+  ~lang_1,    ~lang_2,   ~lang_3,
+  "English",  "Italian", NA,
+  "Spanish",  NA,        "French",
+  "Armenian", "English", "French",
+  NA,         NA,        NA
+)
+
+recipe(~., data = example_data) |>
+  step_dummy_multi_choice(starts_with("lang")) |>
+  prep() |>
+  bake(new_data = NULL)
+```
+:::
+
+## 17 text {.text .center background="linear-gradient(to bottom right, #D1FB7A44, #FDA08544)"}
+
+For day 17 of [#adventofsteps]{.hashtag} we look at another hidden gem with `step_dummy_multi_choice()`
+
+This step shines in exactly one scenario. And that scenario happens when multiple columns in our data set are connected in the specific way seen in the example
+
+<https://recipes.tidymodels.org/reference/step_dummy_multi_choice.html>
+
+## 17 alt-text {.center background="linear-gradient(to bottom right, #D1FB7A44, #FDA08544)"}
+
+Picture of the following code:
+
+``` r
+library(recipes)
+
+example_data <- tribble(
+  ~lang_1,    ~lang_2,   ~lang_3,
+  "English",  "Italian", NA,
+  "Spanish",  NA,        "French",
+  "Armenian", "English", "French",
+  NA,         NA,        NA
+)
+
+recipe(~., data = example_data) |>
+  step_dummy_multi_choice(starts_with("lang")) |>
+  prep() |>
+  bake(new_data = NULL)
+#> # A tibble: 4 × 5
+#>   lang_1_Armenian lang_1_English lang_1_French lang_1_Italian lang_1_Spanish
+#>             <int>          <int>         <int>          <int>          <int>
+#> 1               0              1             0              1              0
+#> 2               0              0             1              0              1
+#> 3               1              1             1              0              0
+#> 4               0              0             0              0              0
+```
+
+## 18 step_depth() {.center background="linear-gradient(to bottom right, #89F7FE, #F48288)"}
+
+::: {.codewindow .r width="1000px" style="margin: 0 auto;"}
+18-day.R
+```{r}
+library(recipes)
+
+data(penguins, package = "modeldata")
+
+recipe(species ~ bill_length_mm + bill_depth_mm, data = penguins) |>
+  step_impute_mean(all_numeric_predictors()) |>
+  step_depth(all_numeric_predictors(), class = "species") |>
+  prep() |>
+  bake(new_data = NULL)
+```
+:::
+
+## 18 text {.text .center background="linear-gradient(to bottom right, #89F7FE44, #F4828844)"}
+
+For day 18 of [#adventofsteps]{.hashtag} we look at `step_depth()`
+
+This step will convert numeric data into a measurement of data depth. This is done for each value of a categorical class variable.
+
+<https://recipes.tidymodels.org/reference/step_depth.html>
+
+## 18 alt-text {.center background="linear-gradient(to bottom right, #89F7FE44, #F4828844)"}
+
+Picture of the following code:
+
+``` r
+library(recipes)
+
+data(penguins, package = "modeldata")
+
+recipe(species ~ bill_length_mm + bill_depth_mm, data = penguins) |>
+  step_impute_mean(all_numeric_predictors()) |>
+  step_depth(all_numeric_predictors(), class = "species") |>
+  prep() |>
+  bake(new_data = NULL)
+#> # A tibble: 344 × 6
+#>    bill_length_mm bill_depth_mm species depth_Adelie depth_Chinstrap
+#>             <dbl>         <dbl> <fct>          <dbl>           <dbl>
+#>  1           39.1          18.7 Adelie       0.355            0     
+#>  2           39.5          17.4 Adelie       0.145            0     
+#>  3           40.3          18   Adelie       0.217            0     
+#>  4           43.9          17.2 Adelie       0.00658          0.0735
+#>  5           36.7          19.3 Adelie       0.0789           0     
+#>  6           39.3          20.6 Adelie       0.0395           0     
+#>  7           38.9          17.8 Adelie       0.329            0     
+#>  8           39.2          19.6 Adelie       0.132            0     
+#>  9           34.1          18.1 Adelie       0.0263           0     
+#> 10           42            20.2 Adelie       0.0461           0     
+#> # ℹ 334 more rows
+#> # ℹ 1 more variable: depth_Gentoo <dbl>
+```
+
+## 19 step_percentile() {.center background="linear-gradient(to bottom right, #FBC78C, #F58085)"}
+
+::: {.codewindow .r width="900px" style="margin: 0 auto;"}
+19-day.R
+```{r}
+library(recipes)
+
+data(ames, package = "modeldata")
+
+recipe(Sale_Price ~ Lot_Frontage + Lot_Area, data = ames) |>
+  step_percentile(all_numeric_predictors()) |>
+  prep() |>
+  bake(new_data = NULL)
+```
+:::
+
+## 19 text {.text .center background="linear-gradient(to bottom right, #FBC78C44, #F5808544)"}
+
+For day 19 of [#adventofsteps]{.hashtag} we look at a way to deal with weird distributions
+
+`step_percentile()` will replace the value of each predictor with its percentile from the training set. This will effectively map any distribution into the range `[0, 1]`.
+
+<https://recipes.tidymodels.org/reference/step_percentile.html>
+
+## 19 alt-text {.center background="linear-gradient(to bottom right, #FBC78C44, #F5808544)"}
+
+Picture of the following code:
+
+``` r
+library(recipes)
+
+data(ames, package = "modeldata")
+
+recipe(Sale_Price ~ Lot_Frontage + Lot_Area, data = ames) |>
+  step_percentile(all_numeric_predictors()) |>
+  prep() |>
+  bake(new_data = NULL)
+#> # A tibble: 2,930 × 3
+#>    Lot_Frontage Lot_Area Sale_Price
+#>           <dbl>    <dbl>      <int>
+#>  1        0.990    0.989     215000
+#>  2        0.77     0.756     105000
+#>  3        0.81     0.898     172000
+#>  4        0.91     0.717     244000
+#>  5        0.68     0.883     189900
+#>  6        0.74     0.580     195500
+#>  7        0.24     0.104     213500
+#>  8        0.25     0.106     191500
+#>  9        0.231    0.120     236500
+#> 10        0.39     0.259     189000
+#> # ℹ 2,920 more rows
+```
+
+## 20 step_impute_ {.center background="linear-gradient(to bottom right, #D2FB7A, #A7C0FD)"}
+
+::: {.codewindow .r width="1200px" style="margin: 0 auto;"}
+20-day.R
+```{r}
+library(recipes)
+
+data(penguins, package = "modeldata")
+
+recipe(species ~ ., data = penguins) |>
+  step_impute_mean(bill_length_mm, bill_depth_mm) |>
+  step_impute_median(body_mass_g, flipper_length_mm) |>
+  step_impute_mode(sex) |>
+  prep() |>
+  bake(new_data = NULL)
+```
+:::
+
+## 20 text {.text .center background="linear-gradient(to bottom right, #D2FB7A44, #A7C0FD44)"}
+
+For day 20 of [#adventofsteps]{.hashtag} we have something special, as we are looking at 3 steps!
+
+What these steps have in common is that they are all doing simple imputation on numeric and categorical predictors. 
+
+<https://recipes.tidymodels.org/reference/index.html#step-functions-imputation>
+
+## 20 alt-text {.center background="linear-gradient(to bottom right, #D2FB7A44, #A7C0FD44)"}
+
+Picture of the following code:
+
+``` r
+library(recipes)
+
+data(penguins, package = "modeldata")
+
+recipe(species ~ ., data = penguins) |>
+  step_impute_mean(bill_length_mm, bill_depth_mm) |>
+  step_impute_median(body_mass_g, flipper_length_mm) |>
+  step_impute_mode(sex) |>
+  prep() |>
+  bake(new_data = NULL)
+#> # A tibble: 344 × 7
+#>    island    bill_length_mm bill_depth_mm flipper_length_mm body_mass_g sex   
+#>    <fct>              <dbl>         <dbl>             <int>       <int> <fct> 
+#>  1 Torgersen           39.1          18.7               181        3750 male  
+#>  2 Torgersen           39.5          17.4               186        3800 female
+#>  3 Torgersen           40.3          18                 195        3250 female
+#>  4 Torgersen           43.9          17.2               197        4050 male  
+#>  5 Torgersen           36.7          19.3               193        3450 female
+#>  6 Torgersen           39.3          20.6               190        3650 male  
+#>  7 Torgersen           38.9          17.8               181        3625 female
+#>  8 Torgersen           39.2          19.6               195        4675 male  
+#>  9 Torgersen           34.1          18.1               193        3475 male  
+#> 10 Torgersen           42            20.2               190        4250 male  
+#> # ℹ 334 more rows
+#> # ℹ 1 more variable: species <fct>
+```
+
+## 21 step_spline_nonnegative() {.center background="linear-gradient(to bottom right, #F092F8, #FCEF8F)"}
+
+::: {.codewindow .r width="1200px" style="margin: 0 auto;"}
+21-day.R
+```{r}
+library(recipes)
+
+data(ames, package = "modeldata")
+
+recipe(Sale_Price ~ Lot_Frontage + Lot_Area, data = ames) |>
+  step_spline_nonnegative(starts_with("Lot_"), deg_free = 3) |>
+  prep() |>
+  bake(new_data = NULL)
+```
+:::
+
+## 21 text {.text .center background="linear-gradient(to bottom right, #F092F844, #FCEF8F44)"}
+
+For day 21 of [#adventofsteps]{.hashtag} we are doing another multi step day! This time talking about splines
+
+We recently added a new batch of spline steps, all with the function signatuve `step_spline_*()`. These additions greatly expand the types of splines you can create.
+
+<https://recipes.tidymodels.org/reference/step_spline_nonnegative.html>
+
+## 21 alt-text {.center background="linear-gradient(to bottom right, #F092F844, #FCEF8F44)"}
+
+Picture of the following code:
+
+``` r
+library(recipes)
+
+data(ames, package = "modeldata")
+
+recipe(Sale_Price ~ Lot_Frontage + Lot_Area, data = ames) |>
+  step_spline_nonnegative(starts_with("Lot_"), deg_free = 3) |>
+  prep() |>
+  bake(new_data = NULL)
+#> # A tibble: 2,930 × 7
+#>    Sale_Price Lot_Frontage_1 Lot_Frontage_2 Lot_Frontage_3 Lot_Area_1 Lot_Area_2
+#>         <int>          <dbl>          <dbl>          <dbl>      <dbl>      <dbl>
+#>  1     215000        0.00522       0.00428       0.00117      5.87e-6    9.76e-7
+#>  2     105000        0.00543       0.00186       0.000213     2.45e-6    1.24e-7
+#>  3     172000        0.00545       0.00190       0.000221     3.00e-6    1.94e-7
+#>  4     244000        0.00563       0.00238       0.000335     2.35e-6    1.14e-7
+#>  5     189900        0.00528       0.00164       0.000169     2.91e-6    1.81e-7
+#>  6     195500        0.00539       0.00179       0.000198     2.09e-6    8.85e-8
+#>  7     213500        0.00379       0.000572      0.0000287    9.17e-7    1.58e-8
+#>  8     191500        0.00392       0.000624      0.0000331    9.38e-7    1.65e-8
+#>  9     236500        0.00366       0.000521      0.0000247    1.03e-6    2.01e-8
+#> 10     189000        0.00480       0.00114       0.0000900    1.53e-6    4.57e-8
+#> # ℹ 2,920 more rows
+#> # ℹ 1 more variable: Lot_Area_3 <dbl>
+```
+
+## 22 step_lincomb() {.center background="linear-gradient(to bottom right, #99C1E8, #FDF190)"}
+
+::: {.codewindow .r width="900px" style="margin: 0 auto;"}
+22-day.R
+```{r}
+library(recipes)
+
+example_data <- tibble(
+  a = c(1, 2, 3, 4),
+  b = c(6, 5, 4, 3),
+  c = c(7, 7, 7, 7)
+)
+
+recipe(~ ., data = example_data) |>
+  step_lincomb(all_numeric_predictors()) |>
+  prep() |>
+  bake(new_data = NULL)
+```
+:::
+
+## 22 text {.text .center background="linear-gradient(to bottom right, #99C1E844, #FDF19044)"}
+
+For day 22 of [#adventofsteps]{.hashtag} we look at a way to deal with the very specific problem of having linearly combined predictors
+
+Some models and methods doesn't like it if numeric predictors have exact linear combinations between them, as it can make it hard in invert the matrix, this is luckily easy to deal with using `step_lincomb()`
+
+<https://recipes.tidymodels.org/reference/step_lincomb.html>
+
+## 22 alt-text {.center background="linear-gradient(to bottom right, #99C1E844, #FDF19044)"}
+
+Picture of the following code:
+
+``` r
+library(recipes)
+
+example_data <- tibble(
+  a = c(1, 2, 3, 4),
+  b = c(6, 5, 4, 3),
+  c = c(7, 7, 7, 7)
+)
+
+recipe(~ ., data = example_data) |>
+  step_lincomb(all_numeric_predictors()) |>
+  prep() |>
+  bake(new_data = NULL)
+#> # A tibble: 4 × 2
+#>       a     b
+#>   <dbl> <dbl>
+#> 1     1     6
+#> 2     2     5
+#> 3     3     4
+#> 4     4     3
+```
+
+## 23 step_zv() {.center background="linear-gradient(to bottom right, #FAC68E, #8FD4F3)"}
+
+::: {.codewindow .r width="900px" style="margin: 0 auto;"}
+23-day.R
+```{r}
+library(recipes)
+
+example_data <- tibble(
+  a = c(1, 2, 3, 4),
+  b = c(1, 2, 2, 1),
+  c = c(3, 3, 3, 3),
+  d = c("Ho", "Ho", "Ho", "Ho")
+)
+
+recipe(~ ., data = example_data) |>
+  step_zv(all_predictors()) |>
+  prep() |>
+  bake(new_data = NULL)
+```
+:::
+
+## 23 text {.text .center background="linear-gradient(to bottom right, #FAC68E44, #8FD4F344)"}
+
+For day 23 of [#adventofsteps]{.hashtag} look at the issue with zero variance predictors
+
+Some methods doesn't like it when a predictor has zero variance. Zero variance is a fancy way of saying that it only takes one value. These variables can be removed with no hard as they don't contain any information by detfinition.
+
+<https://recipes.tidymodels.org/reference/step_zv.html>
+
+## 23 alt-text {.center background="linear-gradient(to bottom right, #FAC68E44, #8FD4F344)"}
+
+Picture of the following code:
+
+``` r
+library(recipes)
+
+example_data <- tibble(
+  a = c(1, 2, 3, 4),
+  b = c(1, 2, 2, 1),
+  c = c(3, 3, 3, 3),
+  d = c("Ho", "Ho", "Ho", "Ho")
+)
+
+recipe(~ ., data = example_data) |>
+  step_zv(all_predictors()) |>
+  prep() |>
+  bake(new_data = NULL)
+#> # A tibble: 4 × 2
+#>       a     b
+#>   <dbl> <dbl>
+#> 1     1     1
+#> 2     2     2
+#> 3     3     2
+#> 4     4     1
+```
+
+## 24 step_dummy_hash() {.center background="linear-gradient(to bottom right, #F093FA, #DFC3FD)"}
+
+::: {.codewindow .r width="1000px" style="margin: 0 auto;"}
+24-day.R
+```{r}
+library(textrecipes)
+
+data(ames, package = "modeldata")
+
+recipe(Sale_Price ~ Neighborhood, data = ames) |>
+  step_dummy_hash(Neighborhood, num_terms = 4) |> # Low for example
+  prep() |>
+  bake(new_data = NULL)
+```
+:::
+
+## 24 text {.text .center background="linear-gradient(to bottom right, #F093FA44, #DFC3FD44)"}
+
+For day 24 of [#adventofsteps]{.hashtag} we look at a fun alternative to dummy variables
+
+Feature hashing is an interesting technique where you create dummy variables, but instead of giving each level its own column, you run the level through a hashing function to determine the column. This means that any number of levels can be put into a fixed number of columns
+
+<https://textrecipes.tidymodels.org/reference/step_dummy_hash.html>
+
+## 24 alt-text {.center background="linear-gradient(to bottom right, #F093FA44, #DFC3FD44)"}
+
+Picture of the following code:
+
+``` r
+library(textrecipes)
+
+data(ames, package = "modeldata")
+
+recipe(Sale_Price ~ Neighborhood, data = ames) |>
+  step_dummy_hash(Neighborhood, num_terms = 4) |> # Low for example
+  prep() |>
+  bake(new_data = NULL)
+#> # A tibble: 2,930 × 5
+#>    Sale_Price dummyhash_Neighborhood_1 dummyhash_Neighborhood_2
+#>         <int>                    <int>                    <int>
+#>  1     215000                        0                       -1
+#>  2     105000                        0                       -1
+#>  3     172000                        0                       -1
+#>  4     244000                        0                       -1
+#>  5     189900                        0                        0
+#>  6     195500                        0                        0
+#>  7     213500                        0                        0
+#>  8     191500                        0                        0
+#>  9     236500                        0                        0
+#> 10     189000                        0                        0
+#> # ℹ 2,920 more rows
+#> # ℹ 2 more variables: dummyhash_Neighborhood_3 <int>,
+#> #   dummyhash_Neighborhood_4 <int>
+```
+
+## 25 step_mutate() {.center background="linear-gradient(to bottom right, #F45972, #F48288)"}
+
+::: {.codewindow .r width="700px" style="margin: 0 auto;"}
+25-day.R
+```{r}
+library(recipes)
+
+recipe(mpg ~ wt + gear, data = mtcars) |>
+  step_mutate(
+    wt_kg = wt * 0.453592,
+    gear_four = gear == 4
+  ) |>
+  prep() |>
+  bake(new_data = NULL)
+```
+:::
+
+## 25 text {.text .center background="linear-gradient(to bottom right, #F4597244, #F4828844)"}
+
+For day 25 of [#adventofsteps]{.hashtag} we have an all rounder!
+
+If there are any simple calculations that isn't implemented already? then you can do them directly with `step_mutate()` which works such like `mutate()` as you already knows
+
+<https://recipes.tidymodels.org/reference/step_mutate.html>
+
+## 25 alt-text {.center background="linear-gradient(to bottom right, #F4597244, #F4828844)"}
+
+Picture of the following code:
+
+``` r
+library(recipes)
+
+recipe(mpg ~ wt + gear, data = mtcars) |>
+  step_mutate(
+    wt_kg = wt * 0.453592,
+    gear_four = gear == 4
+  ) |>
+  prep() |>
+  bake(new_data = NULL)
+#> # A tibble: 32 × 5
+#>       wt  gear   mpg wt_kg gear_four
+#>    <dbl> <dbl> <dbl> <dbl> <lgl>    
+#>  1  2.62     4  21    1.19 TRUE     
+#>  2  2.88     4  21    1.30 TRUE     
+#>  3  2.32     4  22.8  1.05 TRUE     
+#>  4  3.22     3  21.4  1.46 FALSE    
+#>  5  3.44     3  18.7  1.56 FALSE    
+#>  6  3.46     3  18.1  1.57 FALSE    
+#>  7  3.57     3  14.3  1.62 FALSE    
+#>  8  3.19     4  24.4  1.45 TRUE     
+#>  9  3.15     4  22.8  1.43 TRUE     
+#> 10  3.44     4  19.2  1.56 TRUE     
+#> # ℹ 22 more rows
+```

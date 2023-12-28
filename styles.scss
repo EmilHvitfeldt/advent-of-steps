@@ -1,0 +1,27 @@
+/*-- scss:defaults --*/
+
+$red: #AC1E2F;
+
+$presentation-font-size-root: 50px;
+$code-color: $red;
+$link-color: $red;
+
+/*-- scss:rules --*/
+
+h2 {
+  display: none;
+}
+
+.text {
+  font-size: 0.8em;
+}
+
+.hashtag {
+  color: $red;
+  font-weight: bold;
+}
+
+.reveal a {
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+}
